@@ -1,4 +1,4 @@
-# flutter_app
+# gameparrot
 
 A new Flutter project.
 
