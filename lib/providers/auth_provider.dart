@@ -28,6 +28,14 @@ class FirebaseAuthProvider extends ChangeNotifier {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         _uid = user.uid;
+        final idToken = await user.getIdToken();
+        if (!isLogin) {
+          await http.post(
+            Uri.parse('http://localhost:8080/register'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'idToken': idToken}),
+          );
+        }
       }
       notifyListeners();
     } on FirebaseAuthException catch (e) {
