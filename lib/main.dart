@@ -1,14 +1,58 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gameparrot/auth.dart';
+import 'package:gameparrot/websocket_wrapper.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
-  final channel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:8080/ws'),
-    // web/ios: ws://localhost:8080/ws, android: ws://10.0.2.2:8080/ws
-  );
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyDLgYXSj6PN1ArQZM6zCWiNRtGN63knEoQ",
+        authDomain: "gameparrot-42906.firebaseapp.com",
+        projectId: "gameparrot-42906",
+        storageBucket: "gameparrot-42906.firebasestorage.app",
+        messagingSenderId: "374287975014",
+        appId: "1:374287975014:web:782c0254421addeec1e3a7",
+        measurementId: "G-N6V4Q493L6",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class UserInformation {
+  String? uid;
+  String? username;
+}
+
+class _MyAppState extends State<MyApp> {
+  String? _idToken;
+  late WebSocketChannel channel;
+
+  void _handleLoginSuccess(String idToken) {
+    setState(() {
+      _idToken = idToken;
+      channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/ws'));
+    });
+    print("User logged in with token: $idToken");
+
+    // Now you can connect your WebSocket or HTTP requests with this token
+  }
 
   Future<void> pingServer() async {
     final response = await http.get(Uri.parse('http://localhost:8080/ping'));
@@ -16,30 +60,17 @@ class MyApp extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    pingServer(); // call once on start
+  void initState() {
+    super.initState();
+    pingServer();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text('Flutter + Go + WS')),
-        body: StreamBuilder(
-          stream: channel.stream,
-          builder: (context, snapshot) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(snapshot.hasData ? '${snapshot.data}' : 'No message'),
-                  ElevatedButton(
-                    onPressed: () => channel.sink.add('Hello from Flutter!'),
-                    child: Text('Send to Go'),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+      home: _idToken == null
+          ? AuthScreen(onLoginSuccess: _handleLoginSuccess)
+          : WebSocketWrapper(channel: channel),
     );
   }
 }
