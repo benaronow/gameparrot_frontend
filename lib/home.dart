@@ -1,38 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'message_input.dart'; // <--- import the new widget
+import 'message_input.dart';
 
-class WebSocketWrapper extends StatefulWidget {
-  final WebSocketChannel channel;
-
-  const WebSocketWrapper({super.key, required this.channel});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
-  State<WebSocketWrapper> createState() => _WebSocketWrapperState();
+  State<Home> createState() => _HomeState();
 }
 
-class _WebSocketWrapperState extends State<WebSocketWrapper> {
+class _HomeState extends State<Home> {
+  final WebSocketChannel channel = WebSocketChannel.connect(
+    Uri.parse('ws://localhost:8080/ws'),
+  );
+
   @override
   void dispose() {
-    widget.channel.sink.close();
+    channel.sink.close();
     super.dispose();
   }
 
   void _sendMessage(String message) {
-    widget.channel.sink.add(message);
+    channel.sink.add(message);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<FirebaseAuthProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Flutter + Go + WebSocket')),
+      appBar: AppBar(title: const Text('GameParrot')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
               child: StreamBuilder(
-                stream: widget.channel.stream,
+                stream: channel.stream,
                 builder: (context, snapshot) {
                   return Center(
                     child: Text(
@@ -43,7 +49,11 @@ class _WebSocketWrapperState extends State<WebSocketWrapper> {
                 },
               ),
             ),
-            MessageInput(onSend: _sendMessage), // <--- new widget here
+            MessageInput(onSend: _sendMessage),
+            ElevatedButton(
+              onPressed: authProvider.logout,
+              child: Text("Logout"),
+            ),
           ],
         ),
       ),

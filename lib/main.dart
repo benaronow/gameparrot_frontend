@@ -2,9 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gameparrot/auth.dart';
-import 'package:gameparrot/websocket_wrapper.dart';
-import 'package:http/http.dart' as http;
+import 'package:gameparrot/providers/auth_provider.dart';
+import 'package:gameparrot/home.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,52 +26,44 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider<FirebaseAuthProvider>(
+      create: (context) => FirebaseAuthProvider(),
+      child: App(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<App> createState() => _MyAppState();
 }
 
-class UserInformation {
-  String? uid;
-  String? username;
-}
-
-class _MyAppState extends State<MyApp> {
-  String? _idToken;
+class _MyAppState extends State<App> {
   late WebSocketChannel channel;
-
-  void _handleLoginSuccess(String idToken) {
-    setState(() {
-      _idToken = idToken;
-      channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8080/ws'));
-    });
-    print("User logged in with token: $idToken");
-
-    // Now you can connect your WebSocket or HTTP requests with this token
-  }
-
-  Future<void> pingServer() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/ping'));
-    print('Ping response: ${response.body}');
-  }
 
   @override
   void initState() {
     super.initState();
-    pingServer();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<FirebaseAuthProvider>(
+        context,
+        listen: false,
+      );
+
+      if (authProvider.uid == null) {
+        authProvider.authUser();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: _idToken == null
-          ? AuthScreen(onLoginSuccess: _handleLoginSuccess)
-          : WebSocketWrapper(channel: channel),
-    );
+    final authProvider = Provider.of<FirebaseAuthProvider>(context);
+
+    return MaterialApp(home: authProvider.uid == null ? AuthScreen() : Home());
   }
 }
