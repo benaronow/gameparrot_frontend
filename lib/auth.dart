@@ -6,7 +6,7 @@ class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen> {
@@ -58,6 +58,17 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     child: Text(isLogin ? 'Login' : 'Create Account'),
                   ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final userCredential = await authProvider.googleLogin();
+                  print('Logged in as ${userCredential.user?.displayName}');
+                } catch (e) {
+                  print('Login failed: $e');
+                }
+              },
+              child: Text("Sign in with Google"),
+            ),
             TextButton(
               onPressed: () => {_toggleMode(), authProvider.resetErr()},
               child: Text(
