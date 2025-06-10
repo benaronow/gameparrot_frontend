@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   String? _uid;
@@ -48,9 +48,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
   Future<UserCredential> googleLogin() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn(
-      clientId: kIsWeb
-          ? '374287975014-fud569safnsrnefl8kf8ls1hphkdkp2g.apps.googleusercontent.com'
-          : null,
+      clientId: kIsWeb ? dotenv.env['WEB_OAUTH_CLIENT'] : null,
     ).signIn();
 
     if (googleUser == null) {

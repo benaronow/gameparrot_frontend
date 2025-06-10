@@ -39,5 +39,12 @@
   </head>
   <body>
     <script src="flutter_bootstrap.js" async></script>
+    <script>
+      fetch("assets/.env")
+        .then((response) => response.json())
+        .then((env) => {
+          window.env = env;
+        });
+    </script>
   </body>
 </html>
