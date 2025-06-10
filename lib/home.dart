@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:gameparrot/models/user.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -13,7 +16,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final WebSocketChannel channel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:8080/ws'),
+    Uri.parse('ws://localhost:8080/ws/message'),
   );
 
   @override
@@ -26,6 +29,42 @@ class _HomeState extends State<Home> {
     channel.sink.add(message);
   }
 
+  List<User> users = List.empty();
+
+  final WebSocketChannel userChannel = WebSocketChannel.connect(
+    Uri.parse('ws://localhost:8080/ws/status'),
+  );
+
+  void listenToStatusUpdates() {
+    userChannel.stream.listen((message) {
+      final List<dynamic> data = jsonDecode(message);
+      final List<User> usersList = data
+          .map((json) => User.fromJson(json))
+          .toList();
+      setState(() {
+        users = usersList;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    listenToStatusUpdates();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<FirebaseAuthProvider>(
+        context,
+        listen: false,
+      );
+
+      if (authProvider.uid != null) {
+        userChannel.sink.add(authProvider.uid);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<FirebaseAuthProvider>(context);
@@ -36,6 +75,22 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    title: Text(user.email),
+                    leading: Icon(
+                      Icons.circle,
+                      color: user.online ? Colors.green : Colors.grey,
+                      size: 12,
+                    ),
+                  );
+                },
+              ),
+            ),
             Expanded(
               child: StreamBuilder(
                 stream: channel.stream,
