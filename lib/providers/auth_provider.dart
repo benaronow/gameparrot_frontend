@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,8 +48,9 @@ class FirebaseAuthProvider extends ChangeNotifier {
   Future<UserCredential> googleLogin() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn(
-      clientId:
-          '374287975014-fud569safnsrnefl8kf8ls1hphkdkp2g.apps.googleusercontent.com',
+      clientId: kIsWeb
+          ? '374287975014-fud569safnsrnefl8kf8ls1hphkdkp2g.apps.googleusercontent.com'
+          : null,
     ).signIn();
 
     if (googleUser == null) {
@@ -92,15 +94,17 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<void> authUser() async {
     final user = FirebaseAuth.instance.currentUser;
-    final idToken = await user?.getIdToken();
-    final authResponse = await http.post(
-      Uri.parse('http://localhost:8080/auth'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'idToken': idToken}),
-    );
-    if (!authResponse.body.contains("Invalid token")) {
-      _uid = authResponse.body.split("Authenticated UID: ")[0];
-      notifyListeners();
+    if (user != null) {
+      final idToken = await user.getIdToken();
+      final authResponse = await http.post(
+        Uri.parse('http://localhost:8080/auth'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': idToken}),
+      );
+      if (!authResponse.body.contains("Invalid token")) {
+        _uid = authResponse.body.split("Authenticated UID: ")[0];
+        notifyListeners();
+      }
     }
   }
 
