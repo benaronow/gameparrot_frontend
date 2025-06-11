@@ -15,28 +15,42 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final WebSocketChannel channel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:8080/ws/message'),
-  );
+  WebSocketChannel? statusChannel;
+  WebSocketChannel? messageChannel;
+  String? selectedUserId;
 
-  @override
-  void dispose() {
-    channel.sink.close();
-    super.dispose();
-  }
+  Future<void> initWebSockets() async {
+    final authProvider = Provider.of<FirebaseAuthProvider>(
+      context,
+      listen: false,
+    );
 
-  void _sendMessage(String message) {
-    channel.sink.add(message);
+    final status = WebSocketChannel.connect(
+      Uri.parse('ws://localhost:8080/ws/status'),
+    );
+    await status.ready;
+
+    final message = WebSocketChannel.connect(
+      Uri.parse('ws://localhost:8080/ws/message'),
+    );
+
+    setState(() {
+      statusChannel = status;
+      messageChannel = message;
+    });
+
+    if (authProvider.uid != null) {
+      status.sink.add(authProvider.uid);
+      message.sink.add(authProvider.uid);
+    }
+
+    listenToStatusUpdates();
   }
 
   List<User> users = List.empty();
 
-  final WebSocketChannel userChannel = WebSocketChannel.connect(
-    Uri.parse('ws://localhost:8080/ws/status'),
-  );
-
   void listenToStatusUpdates() {
-    userChannel.stream.listen((message) {
+    statusChannel?.stream.listen((message) {
       final List<dynamic> data = jsonDecode(message);
       final List<User> usersList = data
           .map((json) => User.fromJson(json))
@@ -47,22 +61,23 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void _sendMessage(String message, String uid) {
+    if (selectedUserId == null) return;
+    final msgJson = {"message": message, "from": uid, "to": selectedUserId};
+    messageChannel?.sink.add(jsonEncode(msgJson));
+  }
+
   @override
   void initState() {
     super.initState();
+    initWebSockets();
+  }
 
-    listenToStatusUpdates();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = Provider.of<FirebaseAuthProvider>(
-        context,
-        listen: false,
-      );
-
-      if (authProvider.uid != null) {
-        userChannel.sink.add(authProvider.uid);
-      }
-    });
+  @override
+  void dispose() {
+    statusChannel?.sink.close();
+    messageChannel?.sink.close();
+    super.dispose();
   }
 
   @override
@@ -75,25 +90,34 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return ListTile(
-                    title: Text(user.email),
-                    leading: Icon(
-                      Icons.circle,
-                      color: user.online ? Colors.green : Colors.grey,
-                      size: 12,
-                    ),
-                  );
-                },
-              ),
+            DropdownButtonFormField<String>(
+              value: selectedUserId,
+              onChanged: (value) {
+                setState(() {
+                  selectedUserId = value;
+                });
+              },
+              hint: const Text('Select a user to message'),
+              items: users.map((user) {
+                return DropdownMenuItem<String>(
+                  value: user.uid,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.circle,
+                        color: user.online ? Colors.green : Colors.grey,
+                        size: 10,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(user.email),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
             Expanded(
               child: StreamBuilder(
-                stream: channel.stream,
+                stream: messageChannel?.stream,
                 builder: (context, snapshot) {
                   return Center(
                     child: Text(
