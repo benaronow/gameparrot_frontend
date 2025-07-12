@@ -12,9 +12,9 @@ class MessageInput extends StatefulWidget {
   const MessageInput({
     super.key,
     required this.onSend,
-    this.backgroundColor = const Color(0xFF0F3460),
-    this.textColor = Colors.white,
-    this.hintText = "Type a message...",
+    required this.backgroundColor,
+    required this.textColor,
+    required this.hintText,
   });
 
   @override
@@ -45,17 +45,61 @@ class _MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
+    final setSelectedId = Provider.of<HomeProvider>(context).setSelectedId;
+
     return Container(
-      color: widget.backgroundColor,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 12,
+        bottom: 12 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      decoration: BoxDecoration(
+        color: widget.backgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
+          GestureDetector(
+            onTap: () => setSelectedId(null),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isComposing
+                    ? const Color(0xFF53354A)
+                    : const Color(0xFF3A3A50),
+                shape: BoxShape.circle,
+                boxShadow: isComposing
+                    ? [
+                        BoxShadow(
+                          color: Colors.pinkAccent.withOpacity(0.5),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : [],
+              ),
+              padding: const EdgeInsets.all(12),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: _controller,
               onChanged: (text) =>
                   setState(() => isComposing = text.trim().isNotEmpty),
               onSubmitted: (_) => _handleSubmitted(),
+              style: TextStyle(color: widget.textColor),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

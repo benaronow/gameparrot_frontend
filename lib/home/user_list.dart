@@ -25,8 +25,8 @@ class UserList extends StatelessWidget {
         if (user != null) {
           return Container(
             color: isSelected
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
-                : Theme.of(context).colorScheme.background,
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.secondary,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -34,11 +34,9 @@ class UserList extends StatelessWidget {
               ),
               onTap: () => homeProvider.setSelectedId(user.uid),
               leading: CircleAvatar(
-                backgroundColor: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : user.online
+                backgroundColor: user.online
                     ? Colors.green
-                    : Theme.of(context).colorScheme.surface,
+                    : Theme.of(context).colorScheme.onSurface,
                 child: Text(
                   user.email[0].toUpperCase(),
                   style: Theme.of(

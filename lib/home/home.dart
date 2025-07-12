@@ -5,6 +5,7 @@ import 'package:gameparrot/home/user_list.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
+import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import 'message_input.dart';
 
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
     );
 
     _usersProvider = Provider.of<UsersProvider>(context, listen: false);
-    
+
     _usersProvider.getCurrentUser(authProvider.uid);
 
     initWebSockets();
@@ -52,18 +53,24 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final usersProvider = Provider.of<UsersProvider>(context);
     final authProvider = Provider.of<FirebaseAuthProvider>(context);
     final sendMessage = Provider.of<UsersProvider>(
       context,
       listen: false,
     ).sendMessage;
+    final friendIds = usersProvider.currentUser?.friends?.map((f) => f.uid);
+    final friends = usersProvider.users
+        ?.where((u) => friendIds?.contains(u.uid) ?? false)
+        .toList();
     final selectedId = Provider.of<HomeProvider>(context).selectedId;
+    final friend = friends?.where((f) => f.uid == selectedId).firstOrNull;
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F3460),
+        backgroundColor: AppColors.primaryBlue,
         title: const Text('GameParrot'),
         actions: [
           Builder(
@@ -110,13 +117,64 @@ class _HomeState extends State<Home> {
                 if (isMobile && selectedId == null)
                   Expanded(child: UserList())
                 else
-                  Expanded(child: Messages()),
-                if (selectedId != null)
-                  MessageInput(
-                    onSend: sendMessage,
-                    backgroundColor: const Color(0xFF0F3460),
-                    textColor: Colors.white,
-                    hintText: 'Type your message...',
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Messages(),
+                        if (isMobile)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.textPrimary.withValues(
+                                alpha: 0.8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () => Provider.of<HomeProvider>(
+                                    context,
+                                    listen: false,
+                                  ).setSelectedId(null),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    friend?.email ?? '',
+                                    style: const TextStyle(color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (selectedId != null)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: MessageInput(
+                              onSend: sendMessage,
+                              backgroundColor: const Color(0xFF0F3460),
+                              textColor: Colors.white,
+                              hintText: 'Type your message...',
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
               ],
             ),

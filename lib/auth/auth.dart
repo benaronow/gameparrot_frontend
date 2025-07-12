@@ -85,40 +85,63 @@ class _AuthScreenState extends State<AuthScreen> {
                     obscure: true,
                   ),
                   const SizedBox(height: 24),
-                  authProvider.isLoading
-                      ? CircularProgressIndicator(
+                  if (authProvider.isLoading)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: Center(
+                        child: CircularProgressIndicator(
                           color: theme.colorScheme.primary,
-                        )
-                      : ElevatedButton(
-                          onPressed: () => authProvider.login(
-                            isLogin,
-                            _emailController.text.trim(),
-                            _passwordController.text.trim(),
-                          ),
-                          child: Text(isLogin ? 'Login' : 'Create Account'),
                         ),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.primaryBlue,
-                      elevation: 0,
-                      side: BorderSide(
-                        color: AppColors.primaryBlue.withOpacity(0.2),
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: () => authProvider.login(
+                          isLogin,
+                          _emailController.text.trim(),
+                          _passwordController.text.trim(),
+                        ),
+                        child: Text(isLogin ? 'Login' : 'Create Account'),
                       ),
                     ),
-                    onPressed: () async {
-                      try {
-                        final userCredential = await authProvider.googleLogin();
-                        print(
-                          'Logged in as ${userCredential.user?.displayName}',
-                        );
-                      } catch (e) {
-                        print('Login failed: $e');
-                      }
-                    },
-                    icon: Image.asset('assets/google.png', height: 20),
-                    label: const Text('Sign in with Google'),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.white,
+                        foregroundColor: AppColors.primaryBlue,
+                        elevation: 0,
+                        side: BorderSide(
+                          color: AppColors.primaryBlue.withOpacity(0.2),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () async {
+                        try {
+                          final userCredential = await authProvider.googleLogin();
+                          print('Logged in as ${userCredential.user?.displayName}');
+                        } catch (e) {
+                          print('Login failed: $e');
+                        }
+                      },
+                      icon: Image.asset('assets/google.png', height: 20),
+                      label: const Text('Sign in with Google'),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
@@ -166,7 +189,15 @@ class _AuthScreenState extends State<AuthScreen> {
         fillColor: AppColors.gray,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
         ),
       ),
     );

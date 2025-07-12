@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
-import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
 
 class Messages extends StatefulWidget {
@@ -12,6 +12,11 @@ class Messages extends StatefulWidget {
 
 class _MessagesState extends State<Messages> {
   final _scrollController = ScrollController();
+  String? _lastMessageKey;
+
+  String _getMessageKey(dynamic msg) {
+    return '${msg.from}_${msg.to}_${msg.message}';
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,14 +56,33 @@ class _MessagesState extends State<Messages> {
         Expanded(
           child: Container(
             color: Theme.of(context).colorScheme.surface,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListView.builder(
               controller: _scrollController,
               itemCount: messages.length,
+              padding: const EdgeInsets.only(bottom: 8),
               itemBuilder: (ctx, idx) {
                 final msg = messages[idx];
                 final isMe = msg.from == currentUserId;
-                return AnimatedMessage(
-                  key: ValueKey(msg.from + msg.message + idx.toString()),
+                final messageKey = _getMessageKey(msg);
+                final isNewMessage = idx == messages.length - 1 && 
+                    _lastMessageKey != messageKey;
+
+                // Update the last message key when we render a new message
+                if (isNewMessage) {
+                  _lastMessageKey = messageKey;
+                }
+
+                if (isNewMessage) {
+                  return SlideMessageBubble(
+                    key: ValueKey(messageKey),
+                    message: msg.message,
+                    isMe: isMe,
+                  );
+                }
+
+                return MessageBubble(
+                  key: ValueKey(messageKey),
                   message: msg.message,
                   isMe: isMe,
                 );
@@ -71,25 +95,63 @@ class _MessagesState extends State<Messages> {
   }
 }
 
-class AnimatedMessage extends StatefulWidget {
+class MessageBubble extends StatelessWidget {
   final String message;
   final bool isMe;
 
-  const AnimatedMessage({
-    required Key key,
+  const MessageBubble({
+    Key? key,
     required this.message,
     required this.isMe,
   }) : super(key: key);
 
   @override
-  State<AnimatedMessage> createState() => _AnimatedMessageState();
+  Widget build(BuildContext context) {
+    final maxBubbleWidth = MediaQuery.of(context).size.width * 0.65;
+    final theme = Theme.of(context);
+
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+        decoration: BoxDecoration(
+          color: isMe ? AppColors.bubbleMe : AppColors.bubbleOther,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Text(
+          message,
+          style: theme.textTheme.bodyMedium!.copyWith(
+            color: isMe
+                ? AppColors.textOnPrimary
+                : AppColors.textOnBubbleOther,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _AnimatedMessageState extends State<AnimatedMessage>
+class SlideMessageBubble extends StatefulWidget {
+  final String message;
+  final bool isMe;
+
+  const SlideMessageBubble({
+    Key? key,
+    required this.message,
+    required this.isMe,
+  }) : super(key: key);
+
+  @override
+  State<SlideMessageBubble> createState() => _SlideMessageBubbleState();
+}
+
+class _SlideMessageBubbleState extends State<SlideMessageBubble>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
@@ -106,11 +168,6 @@ class _AnimatedMessageState extends State<AnimatedMessage>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    _fadeAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-
     _controller.forward();
   }
 
@@ -122,34 +179,11 @@ class _AnimatedMessageState extends State<AnimatedMessage>
 
   @override
   Widget build(BuildContext context) {
-    final maxBubbleWidth = MediaQuery.of(context).size.width * 0.65;
-    final theme = Theme.of(context);
-
     return SlideTransition(
       position: _slideAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Align(
-          alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            constraints: BoxConstraints(maxWidth: maxBubbleWidth),
-            decoration: BoxDecoration(
-              color: widget.isMe ? AppColors.bubbleMe : AppColors.bubbleOther,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Text(
-              widget.message,
-              style: theme.textTheme.bodyMedium!.copyWith(
-                color: widget.isMe
-                    ? AppColors.textOnPrimary
-                    : AppColors.textOnBubbleOther,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ),
+      child: MessageBubble(
+        message: widget.message,
+        isMe: widget.isMe,
       ),
     );
   }
