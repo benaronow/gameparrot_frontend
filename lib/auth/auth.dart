@@ -190,24 +190,50 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  StyledButton(
-                    text: 'Sign in with Google',
-                    icon: Icons.login,
+                  Container(
                     width: double.infinity,
                     height: 56,
-                    backgroundColor: AppColors.white,
-                    textColor: AppColors.primaryBlue,
-                    outline: true,
-                    onPressed: () async {
-                      try {
-                        final userCredential = await authProvider.googleLogin();
-                        print(
-                          'Logged in as ${userCredential.user?.displayName}',
-                        );
-                      } catch (e) {
-                        print('Login failed: $e');
-                      }
-                    },
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.gray, width: 2),
+                      color: Colors.white,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () async {
+                          try {
+                            final userCredential = await authProvider
+                                .googleLogin();
+                            print(
+                              'Logged in as ${userCredential.user?.displayName}',
+                            );
+                          } catch (e) {
+                            print('Login failed: $e');
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/google.png',
+                              width: 20,
+                              height: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                color: AppColors.primaryBlue,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

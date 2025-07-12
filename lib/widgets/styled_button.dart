@@ -143,7 +143,7 @@ class _StyledButtonState extends State<StyledButton>
                         ] else if (widget.icon != null) ...[
                           Icon(
                             widget.icon,
-                            color: widget.outline ? backgroundColor : textColor,
+                            color: widget.outline ? textColor : textColor,
                             size: 18,
                             shadows: widget.outline
                                 ? null
@@ -163,9 +163,7 @@ class _StyledButtonState extends State<StyledButton>
                           child: Text(
                             widget.text,
                             style: TextStyle(
-                              color: widget.outline
-                                  ? backgroundColor
-                                  : textColor,
+                              color: widget.outline ? textColor : textColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               shadows: widget.outline
