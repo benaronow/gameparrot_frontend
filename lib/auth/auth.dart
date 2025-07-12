@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'styled_input.dart';
+import '../widgets/widgets.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -42,16 +42,33 @@ class _AuthScreenState extends State<AuthScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Container(
-              padding: const EdgeInsets.all(24),
-              constraints: const BoxConstraints(maxWidth: 400),
+              padding: const EdgeInsets.all(32),
+              constraints: const BoxConstraints(maxWidth: 420),
               decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.gray),
+                gradient: LinearGradient(
+                  colors: [AppColors.white, AppColors.white.withOpacity(0.95)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  width: 1,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withValues(alpha: .08),
-                    blurRadius: 16,
+                    color: AppColors.darkBlue.withOpacity(0.2),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.9),
+                    blurRadius: 2,
+                    offset: const Offset(0, -2),
+                  ),
+                  BoxShadow(
+                    color: AppColors.primaryBlue.withOpacity(0.05),
+                    blurRadius: 32,
                     offset: const Offset(0, 8),
                   ),
                 ],
@@ -59,19 +76,92 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    isLogin ? 'Welcome Back!' : 'Create Account',
-                    style: theme.textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 24),
-                  if (authProvider.errorMessage != null) ...[
-                    Text(
-                      authProvider.errorMessage!,
-                      style: theme.textTheme.bodyMedium!.copyWith(
-                        color: Colors.red,
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      isLogin ? 'Welcome Back!' : 'Create Account',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            offset: const Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                  ),
+                  const SizedBox(height: 32),
+                  if (authProvider.errorMessage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.red.shade50, Colors.red.shade100],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.red.shade200,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withValues(alpha: 0.2),
+                            offset: const Offset(0, 2),
+                            blurRadius: 6,
+                          ),
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            offset: const Offset(0, -1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red.withValues(alpha: 0.3),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.error_outline,
+                              color: Colors.red.shade700,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              authProvider.errorMessage!,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: Colors.red.shade700,
+                                fontWeight: FontWeight.w500,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.white.withValues(alpha: 0.8),
+                                    offset: const Offset(0, 1),
+                                    blurRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                   StyledInput(
                     controller: _emailController,
@@ -87,65 +177,37 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 24),
                   if (authProvider.isLoading)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    )
+                    const StyledLoading(message: 'Signing you in...', size: 56)
                   else
-                    SizedBox(
+                    StyledButton(
+                      text: isLogin ? 'Login' : 'Create Account',
                       width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue,
-                          foregroundColor: AppColors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: () => authProvider.login(
-                          isLogin,
-                          _emailController.text.trim(),
-                          _passwordController.text.trim(),
-                        ),
-                        child: Text(isLogin ? 'Login' : 'Create Account'),
+                      height: 56,
+                      onPressed: () => authProvider.login(
+                        isLogin,
+                        _emailController.text.trim(),
+                        _passwordController.text.trim(),
                       ),
                     ),
-                  const SizedBox(height: 12),
-                  SizedBox(
+                  const SizedBox(height: 16),
+                  StyledButton(
+                    text: 'Sign in with Google',
+                    icon: Icons.login,
                     width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.white,
-                        foregroundColor: AppColors.primaryBlue,
-                        elevation: 0,
-                        side: BorderSide(
-                          color: AppColors.primaryBlue.withOpacity(0.2),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () async {
-                        try {
-                          final userCredential = await authProvider
-                              .googleLogin();
-                          print(
-                            'Logged in as ${userCredential.user?.displayName}',
-                          );
-                        } catch (e) {
-                          print('Login failed: $e');
-                        }
-                      },
-                      icon: Image.asset('assets/google.png', height: 20),
-                      label: const Text('Sign in with Google'),
-                    ),
+                    height: 56,
+                    backgroundColor: AppColors.white,
+                    textColor: AppColors.primaryBlue,
+                    outline: true,
+                    onPressed: () async {
+                      try {
+                        final userCredential = await authProvider.googleLogin();
+                        print(
+                          'Logged in as ${userCredential.user?.displayName}',
+                        );
+                      } catch (e) {
+                        print('Login failed: $e');
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextButton(

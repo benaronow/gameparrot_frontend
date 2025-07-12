@@ -31,16 +31,56 @@ class MessageBubble extends StatelessWidget {
               maxWidth: MediaQuery.of(context).size.width * 0.7,
             ),
             margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
-              color: isMe ? AppColors.primaryBlue : Colors.grey[300],
-              borderRadius: BorderRadius.circular(12),
+              gradient: isMe
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.primaryBlue,
+                        AppColors.primaryBlue.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : LinearGradient(
+                      colors: [
+                        AppColors.lightBlue,
+                        AppColors.lightBlue.withOpacity(0.9),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: isMe
+                      ? AppColors.primaryBlue.withOpacity(0.3)
+                      : Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.1),
+                  blurRadius: 1,
+                  offset: const Offset(0, -1),
+                ),
+              ],
             ),
             child: Text(
               message,
               style: TextStyle(
-                color: isMe ? Colors.white : Colors.black87,
+                color: isMe ? Colors.white : AppColors.textOnBubbleOther,
                 fontSize: 16,
+                fontWeight: FontWeight.w500,
+                shadows: isMe
+                    ? [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(0, 1),
+                          blurRadius: 2,
+                        ),
+                      ]
+                    : null,
               ),
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
+import '../widgets/widgets.dart';
 
 class AccountDialog extends StatelessWidget {
   const AccountDialog({super.key});
@@ -61,66 +62,139 @@ class AccountDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.15),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withOpacity(0.15),
                   width: 1,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.1),
+                    blurRadius: 2,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.people_outline,
-                        color: Colors.white.withOpacity(0.9),
-                        size: 20,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withOpacity(0.2),
+                              Colors.white.withOpacity(0.1),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.people_outline,
+                          color: Colors.white.withOpacity(0.9),
+                          size: 20,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.3),
+                              offset: const Offset(0, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Text(
                         "Friend Requests",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.4),
+                              offset: const Offset(0, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Text(
                     "Coming soon...",
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.3),
+                          offset: const Offset(0, 1),
+                          blurRadius: 1,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: .2),
+                    Colors.white.withValues(alpha: .1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.1),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+                ],
               ),
-              child: const Text(
-                "Close",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: StyledButton(
+                text: "Close",
+                onPressed: () => Navigator.pop(context),
+                backgroundColor: Colors.white.withOpacity(0.2),
+                textColor: Colors.white,
+                height: 48,
               ),
             ),
           ],
