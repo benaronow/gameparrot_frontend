@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/theme.dart';
 
 class MessageBubble extends StatelessWidget {
   final String message;
@@ -32,7 +33,7 @@ class MessageBubble extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 4),
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-              color: isMe ? Theme.of(context).primaryColor : Colors.grey[300],
+              color: isMe ? AppColors.primaryBlue : Colors.grey[300],
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

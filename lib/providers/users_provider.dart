@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gameparrot/config.dart';
 import 'package:gameparrot/models/update.dart';
 import 'package:gameparrot/models/user.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -15,7 +16,7 @@ class UsersProvider extends ChangeNotifier {
   List<User>? get users => _users;
 
   Future<void> getCurrentUser(String? uid) async {
-    final uri = Uri.http('localhost:8080', '/currentUser', {'uid': uid ?? ''});
+    final uri = Uri.parse('${Config.httpUrl}/currentUser?uid=${uid ?? ''}');
 
     final userResponse = await http.get(
       uri,
@@ -27,7 +28,7 @@ class UsersProvider extends ChangeNotifier {
 
   Future<void> startWsChannel(String? uid) async {
     final WebSocketChannel channel = WebSocketChannel.connect(
-      Uri.parse('ws://localhost:8080/ws'),
+      Uri.parse('${Config.wsUrl}?uid=$uid'),
     );
     _wsChannel = channel;
     await channel.ready;

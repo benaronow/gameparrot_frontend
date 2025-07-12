@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'styled_input.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -32,7 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.lightBlue, AppColors.primaryBlue],
+            colors: [AppColors.lightBlue, AppColors.darkBlue],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -44,12 +45,12 @@ class _AuthScreenState extends State<AuthScreen> {
               padding: const EdgeInsets.all(24),
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.95),
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.gray.withOpacity(0.5)),
+                border: Border.all(color: AppColors.gray),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.08),
+                    color: AppColors.primaryBlue.withValues(alpha: .08),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -72,13 +73,13 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     const SizedBox(height: 12),
                   ],
-                  _styledInput(
+                  StyledInput(
                     controller: _emailController,
                     hint: 'Email',
                     icon: Icons.email_outlined,
                   ),
                   const SizedBox(height: 16),
-                  _styledInput(
+                  StyledInput(
                     controller: _passwordController,
                     hint: 'Password',
                     icon: Icons.lock_outline,
@@ -133,8 +134,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       onPressed: () async {
                         try {
-                          final userCredential = await authProvider.googleLogin();
-                          print('Logged in as ${userCredential.user?.displayName}');
+                          final userCredential = await authProvider
+                              .googleLogin();
+                          print(
+                            'Logged in as ${userCredential.user?.displayName}',
+                          );
                         } catch (e) {
                           print('Login failed: $e');
                         }
@@ -163,41 +167,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _styledInput({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool obscure = false,
-  }) {
-    final theme = Theme.of(context);
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: theme.textTheme.bodyMedium,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: theme.colorScheme.primary),
-        hintText: hint,
-        hintStyle: theme.textTheme.bodyMedium!.copyWith(
-          color: AppColors.darkGray,
-        ),
-        filled: true,
-        fillColor: AppColors.gray,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primaryBlue.withOpacity(0.2)),
         ),
       ),
     );

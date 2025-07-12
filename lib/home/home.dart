@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gameparrot/home/account_dialog.dart';
-import 'package:gameparrot/home/messages.dart';
+import 'package:gameparrot/home/messages/messages.dart';
 import 'package:gameparrot/home/user_list.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:gameparrot/providers/home_provider.dart';
@@ -70,7 +70,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor: AppColors.darkBlue,
         title: const Text('GameParrot'),
         actions: [
           Builder(
@@ -108,9 +108,10 @@ class _HomeState extends State<Home> {
           if (!isMobile)
             Container(
               width: 250,
-              color: const Color(0xFF16213E),
+              color: AppColors.lightBlue,
               child: UserList(),
             ),
+          if (!isMobile) Container(width: 5, color: AppColors.darkBlue),
           Expanded(
             child: Column(
               children: [
@@ -128,16 +129,14 @@ class _HomeState extends State<Home> {
                               horizontal: 16,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.textPrimary.withValues(
-                                alpha: 0.8,
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.darkBlue,
+                                  Colors.black.withValues(alpha: 0),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
                             ),
                             child: Row(
                               children: [

@@ -24,9 +24,7 @@ class UserList extends StatelessWidget {
 
         if (user != null) {
           return Container(
-            color: isSelected
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.secondary,
+            color: isSelected ? AppColors.accentBlue : AppColors.primaryBlue,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -58,7 +56,7 @@ class UserList extends StatelessWidget {
                       ? Colors.green
                       : Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
+                        ).colorScheme.onSurface.withValues(alpha: .6),
                 ),
               ),
               trailing: isSelected

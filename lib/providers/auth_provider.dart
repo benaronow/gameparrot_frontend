@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   String? _uid;
@@ -32,7 +33,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         _uid = user.uid;
         final idToken = await user.getIdToken();
         await http.post(
-          Uri.parse('http://localhost:8080/register'),
+          Uri.parse('${Config.httpUrl}/register'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'idToken': idToken}),
         );
@@ -57,7 +58,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         _uid = user.uid;
         final idToken = await user.getIdToken();
         await http.post(
-          Uri.parse('http://localhost:8080/register'),
+          Uri.parse('${Config.httpUrl}/register'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'idToken': idToken}),
         );
@@ -86,7 +87,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         _uid = user.uid;
         final idToken = await user.getIdToken();
         await http.post(
-          Uri.parse('http://localhost:8080/register'),
+          Uri.parse('${Config.httpUrl}/register'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'idToken': idToken}),
         );
@@ -107,7 +108,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
     if (user != null) {
       final idToken = await user.getIdToken();
       final authResponse = await http.post(
-        Uri.parse('http://localhost:8080/auth'),
+        Uri.parse('${Config.httpUrl}/auth'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'idToken': idToken}),
       );
