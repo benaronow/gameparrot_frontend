@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/home/account_dialog.dart';
+import 'package:gameparrot/home/account_dialog/account_dialog.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
-import '../../widgets/widgets.dart';
+import '../widgets/widgets.dart';
 
 class GameParrotAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GameParrotAppBar({super.key});

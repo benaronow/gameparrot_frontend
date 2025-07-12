@@ -116,5 +116,6 @@ class UsersProvider extends ChangeNotifier {
 
   void closeWsChannel() {
     _wsChannel?.sink.close();
+    _wsChannel = null;
   }
 }

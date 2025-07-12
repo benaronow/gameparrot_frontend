@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gameparrot/theme.dart';
-import '../user_list.dart';
+import 'user_list/user_list.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
-import '../widgets/widgets.dart';
+import '../../widgets/widgets.dart';
 
 class AccountDialog extends StatelessWidget {
   const AccountDialog({super.key});

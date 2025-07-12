@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'app_bar.dart';
+import 'home_layout.dart';
 import 'package:gameparrot/theme.dart';
-import 'components/components.dart';
-import 'services/services.dart';
+import '../services/services.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,7 +20,7 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    WebSocketService.dispose(context);
+    WebSocketService.dispose();
     super.dispose();
   }
 

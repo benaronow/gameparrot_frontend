@@ -3,7 +3,7 @@ import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
-import '../widgets/widgets.dart';
+import '../../widgets/widgets.dart';
 
 class MessageInput extends StatefulWidget {
   final void Function(String message, String from, String to) onSend;
@@ -95,7 +95,7 @@ class _MessageInputState extends State<MessageInput> {
                     ),
                     hintText: widget.hintText,
                     hintStyle: TextStyle(
-                      color: widget.textColor.withOpacity(0.5),
+                      color: widget.textColor.withValues(alpha: .5),
                     ),
                     filled: true,
                     fillColor: Colors.white,
@@ -107,7 +107,7 @@ class _MessageInputState extends State<MessageInput> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(50),
                       borderSide: BorderSide(
-                        color: AppColors.primaryBlue.withOpacity(0.3),
+                        color: AppColors.primaryBlue.withValues(alpha: .3),
                         width: 2,
                       ),
                     ),
@@ -125,7 +125,7 @@ class _MessageInputState extends State<MessageInput> {
             icon: Icons.send_rounded,
             backgroundColor: isComposing
                 ? AppColors.primaryBlue
-                : AppColors.primaryBlue.withOpacity(0.5),
+                : AppColors.primaryBlue.withValues(alpha: .2),
             iconColor: Colors.white,
             size: 48,
             onPressed: isComposing ? _handleSubmitted : null,

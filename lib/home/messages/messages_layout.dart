@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../messages/messages.dart';
-import '../message_input.dart';
+import 'messages.dart';
+import 'message_input.dart';
 import 'mobile_header.dart';
 
-class ChatArea extends StatelessWidget {
+class MessagesLayout extends StatelessWidget {
   final bool isMobile;
   final String? selectedId;
   final String? friendEmail;
   final Function(String, String, String) onSend;
 
-  const ChatArea({
+  const MessagesLayout({
     super.key,
     required this.isMobile,
     required this.selectedId,

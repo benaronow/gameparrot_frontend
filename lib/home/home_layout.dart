@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../user_list.dart';
+import 'user_list/user_list.dart';
 import 'sidebar.dart';
-import 'chat_area.dart';
+import 'messages/messages_layout.dart';
 
 class HomeLayout extends StatelessWidget {
   final bool isMobile;
@@ -28,7 +28,7 @@ class HomeLayout extends StatelessWidget {
               if (isMobile && selectedId == null)
                 Expanded(child: UserList())
               else
-                ChatArea(
+                MessagesLayout(
                   isMobile: isMobile,
                   selectedId: selectedId,
                   friendEmail: friendEmail,
