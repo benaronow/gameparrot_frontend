@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   String? _uid;
@@ -29,19 +32,68 @@ class FirebaseAuthProvider extends ChangeNotifier {
       if (user != null) {
         _uid = user.uid;
         final idToken = await user.getIdToken();
-        if (!isLogin) {
-          await http.post(
-            Uri.parse('http://localhost:8080/register'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'idToken': idToken}),
-          );
-        }
+        await http.post(
+          Uri.parse('${Config.httpUrl}/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'idToken': idToken}),
+        );
+        notifyListeners();
       }
-      notifyListeners();
     } on FirebaseAuthException catch (e) {
       _errorMessage = e.message;
     } finally {
       _isLoading = false;
+    }
+  }
+
+  Future<UserCredential> googleLogin() async {
+    if (kIsWeb) {
+      // Web sign-in
+      final GoogleAuthProvider authProvider = GoogleAuthProvider();
+      final userCredential = await FirebaseAuth.instance.signInWithPopup(
+        authProvider,
+      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _uid = user.uid;
+        final idToken = await user.getIdToken();
+        await http.post(
+          Uri.parse('${Config.httpUrl}/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'idToken': idToken}),
+        );
+        notifyListeners();
+      }
+      return userCredential;
+    } else {
+      // Mobile (iOS/Android) sign-in
+      final googleSignIn = GoogleSignIn.instance;
+      await googleSignIn.initialize(
+        clientId: kIsWeb ? dotenv.env['WEB_OAUTH_CLIENT'] : null,
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
+      if (googleUser == null) {
+        throw Exception("Google Sign-In aborted");
+      }
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _uid = user.uid;
+        final idToken = await user.getIdToken();
+        await http.post(
+          Uri.parse('${Config.httpUrl}/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'idToken': idToken}),
+        );
+        notifyListeners();
+      }
+      return userCredential;
     }
   }
 
@@ -53,15 +105,17 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<void> authUser() async {
     final user = FirebaseAuth.instance.currentUser;
-    final idToken = await user?.getIdToken();
-    final authResponse = await http.post(
-      Uri.parse('http://localhost:8080/auth'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'idToken': idToken}),
-    );
-    if (!authResponse.body.contains("Invalid token")) {
-      _uid = authResponse.body.split("Authenticated UID: ")[0];
-      notifyListeners();
+    if (user != null) {
+      final idToken = await user.getIdToken();
+      final authResponse = await http.post(
+        Uri.parse('${Config.httpUrl}/auth'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': idToken}),
+      );
+      if (!authResponse.body.contains("Invalid token")) {
+        _uid = authResponse.body.split("Authenticated UID: ")[0];
+        notifyListeners();
+      }
     }
   }
 

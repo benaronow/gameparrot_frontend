@@ -19,3 +19,12 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+defaultConfig {
+    applicationId "com.gameparrot.app"
+    minSdkVersion 21
+    targetSdkVersion 33
+    compileSdkVersion 33
+    versionCode 1
+    versionName "1.0"
+}
