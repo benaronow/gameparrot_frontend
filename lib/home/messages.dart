@@ -1,50 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/models/user.dart';
+import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
 
 class Messages extends StatefulWidget {
-  const Messages({super.key});
-
   @override
   State<Messages> createState() => _MessagesState();
 }
 
 class _MessagesState extends State<Messages> {
-  late ScrollController _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  final _scrollController = ScrollController();
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Scroll after build to bottom
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
+    _scrollToBottom();
   }
 
   @override
@@ -53,79 +33,41 @@ class _MessagesState extends State<Messages> {
     final usersProvider = Provider.of<UsersProvider>(context);
 
     final friends = usersProvider.currentUser?.friends ?? [];
-    final friend = friends.firstWhere(
-      (f) => f.uid == homeProvider.selectedId,
-      orElse: () => Friend(uid: '', messages: []),
-    );
+    final selectedId = homeProvider.selectedId;
+
+    final friend = friends.where((f) => f.uid == selectedId).isNotEmpty
+        ? friends.firstWhere((f) => f.uid == selectedId)
+        : null;
+
+    if (selectedId == null || friend == null) {
+      return const Center(child: Text('Select a conversation'));
+    }
+
     final messages = friend.messages;
-
     final currentUserId = Provider.of<FirebaseAuthProvider>(context).uid;
-    final isMobile = MediaQuery.of(context).size.width < 600;
 
-    return homeProvider.selectedId == null
-        ? const Center(
-            child: Text(
-              "Select a user to chat with",
-              style: TextStyle(color: Colors.white70),
+    return Column(
+      children: [
+        Expanded(
+          child: Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: messages.length,
+              itemBuilder: (ctx, idx) {
+                final msg = messages[idx];
+                final isMe = msg.from == currentUserId;
+                return AnimatedMessage(
+                  key: ValueKey(msg.from + msg.message + idx.toString()),
+                  message: msg.message,
+                  isMe: isMe,
+                );
+              },
             ),
-          )
-        : Column(
-            children: [
-              if (isMobile)
-                Container(
-                  color: const Color(0xFF0F3460),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => homeProvider.setSelectedId(null),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        usersProvider.users
-                                ?.firstWhere(
-                                  (u) => u.uid == homeProvider.selectedId,
-                                )
-                                .email ??
-                            "",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Expanded(
-                child: Container(
-                  color: const Color(0xFF1A1A2E),
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final data = messages[index];
-                      final isMe = data.from == currentUserId;
-
-                      return AnimatedMessage(
-                        key: ValueKey(data.message),
-                        message: data.message,
-                        isMe: isMe,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -181,6 +123,7 @@ class _AnimatedMessageState extends State<AnimatedMessage>
   @override
   Widget build(BuildContext context) {
     final maxBubbleWidth = MediaQuery.of(context).size.width * 0.65;
+    final theme = Theme.of(context);
 
     return SlideTransition(
       position: _slideAnimation,
@@ -193,15 +136,15 @@ class _AnimatedMessageState extends State<AnimatedMessage>
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             constraints: BoxConstraints(maxWidth: maxBubbleWidth),
             decoration: BoxDecoration(
-              color: widget.isMe
-                  ? const Color(0xFF0F3460)
-                  : const Color(0xFF53354A),
+              color: widget.isMe ? AppColors.bubbleMe : AppColors.bubbleOther,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Text(
               widget.message,
-              style: TextStyle(
-                color: widget.isMe ? Colors.white : Colors.white70,
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: widget.isMe
+                    ? AppColors.textOnPrimary
+                    : AppColors.textOnBubbleOther,
                 fontSize: 14,
               ),
             ),

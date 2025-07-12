@@ -23,19 +23,9 @@ class AccountDialog extends StatelessWidget {
           children: [
             const Icon(Icons.person, size: 40, color: Colors.white),
             const SizedBox(height: 10),
-            Text(
-              currentUser?.email ?? "Unknown User",
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
+            Text(currentUser?.email ?? "Unknown User"),
             const SizedBox(height: 6),
-            Text(
-              "UID: ${currentUser?.uid ?? "null"}",
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
-            ),
+            Text("UID: ${currentUser?.uid ?? "null"}"),
             const SizedBox(height: 20),
             Container(
               height: 100,
@@ -44,19 +34,10 @@ class AccountDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               alignment: Alignment.center,
-              child: const Text(
-                "Friend Requests coming soon...",
-                style: TextStyle(color: Colors.white54),
-              ),
+              child: const Text("Friend Requests coming soon..."),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF53354A),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
               onPressed: () => Navigator.pop(context),
               child: const Text("Close"),
             ),

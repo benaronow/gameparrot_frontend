@@ -16,6 +16,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late UsersProvider _usersProvider;
+
   @override
   void initState() {
     super.initState();
@@ -24,10 +26,10 @@ class _HomeState extends State<Home> {
       context,
       listen: false,
     );
-    Provider.of<UsersProvider>(
-      context,
-      listen: false,
-    ).getCurrentUser(authProvider.uid);
+
+    _usersProvider = Provider.of<UsersProvider>(context, listen: false);
+    
+    _usersProvider.getCurrentUser(authProvider.uid);
 
     initWebSockets();
   }
@@ -44,7 +46,7 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    Provider.of<UsersProvider>(context, listen: false).closeWsChannel();
+    _usersProvider.closeWsChannel();
     super.dispose();
   }
 
@@ -62,10 +64,7 @@ class _HomeState extends State<Home> {
       backgroundColor: const Color(0xFF1A1A2E),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F3460),
-        title: const Text(
-          'GameParrot',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('GameParrot'),
         actions: [
           Builder(
             builder: (context) => IconButton(

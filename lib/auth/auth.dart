@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<FirebaseAuthProvider>(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       body: Container(
@@ -30,7 +32,7 @@ class _AuthScreenState extends State<AuthScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1B1B2F), Color(0xFF162447)],
+            colors: [AppColors.lightBlue, AppColors.primaryBlue],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -42,14 +44,14 @@ class _AuthScreenState extends State<AuthScreen> {
               padding: const EdgeInsets.all(24),
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: AppColors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white12),
+                border: Border.all(color: AppColors.gray.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    color: AppColors.primaryBlue.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
@@ -58,18 +60,15 @@ class _AuthScreenState extends State<AuthScreen> {
                 children: [
                   Text(
                     isLogin ? 'Welcome Back!' : 'Create Account',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.2,
-                    ),
+                    style: theme.textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 24),
                   if (authProvider.errorMessage != null) ...[
                     Text(
                       authProvider.errorMessage!,
-                      style: const TextStyle(color: Colors.redAccent),
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        color: Colors.red,
+                      ),
                     ),
                     const SizedBox(height: 12),
                   ],
@@ -87,40 +86,25 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 24),
                   authProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? CircularProgressIndicator(
+                          color: theme.colorScheme.primary,
+                        )
                       : ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xFF53354A),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
                           onPressed: () => authProvider.login(
                             isLogin,
                             _emailController.text.trim(),
                             _passwordController.text.trim(),
                           ),
-                          child: Text(
-                            isLogin ? 'Login' : 'Create Account',
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          child: Text(isLogin ? 'Login' : 'Create Account'),
                         ),
                   const SizedBox(height: 12),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                      backgroundColor: AppColors.white,
+                      foregroundColor: AppColors.primaryBlue,
+                      elevation: 0,
+                      side: BorderSide(
+                        color: AppColors.primaryBlue.withOpacity(0.2),
                       ),
                     ),
                     onPressed: () async {
@@ -133,10 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         print('Login failed: $e');
                       }
                     },
-                    icon: Image.asset(
-                      'assets/google.png', // Add this asset to your project
-                      height: 20,
-                    ),
+                    icon: Image.asset('assets/google.png', height: 20),
                     label: const Text('Sign in with Google'),
                   ),
                   const SizedBox(height: 16),
@@ -149,9 +130,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       isLogin
                           ? 'Don\'t have an account? Create one'
                           : 'Already have an account? Login',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -170,16 +151,19 @@ class _AuthScreenState extends State<AuthScreen> {
     required IconData icon,
     bool obscure = false,
   }) {
+    final theme = Theme.of(context);
     return TextField(
       controller: controller,
       obscureText: obscure,
-      style: const TextStyle(color: Colors.white),
+      style: theme.textTheme.bodyMedium,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.white70),
+        prefixIcon: Icon(icon, color: theme.colorScheme.primary),
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white38),
+        hintStyle: theme.textTheme.bodyMedium!.copyWith(
+          color: AppColors.darkGray,
+        ),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: AppColors.gray,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,

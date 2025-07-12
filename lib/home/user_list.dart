@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,9 @@ class UserList extends StatelessWidget {
 
         if (user != null) {
           return Container(
-            color: isSelected ? const Color(0xFF0F3460) : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
+                : Theme.of(context).colorScheme.background,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -32,40 +35,44 @@ class UserList extends StatelessWidget {
               onTap: () => homeProvider.setSelectedId(user.uid),
               leading: CircleAvatar(
                 backgroundColor: isSelected
-                    ? Colors.blueAccent
+                    ? Theme.of(context).colorScheme.primary
                     : user.online
                     ? Colors.green
-                    : Colors.grey,
+                    : Theme.of(context).colorScheme.surface,
                 child: Text(
                   user.email[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge!.copyWith(color: AppColors.white),
                 ),
               ),
               title: Text(
                 user.email,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-                overflow: TextOverflow
-                    .ellipsis, // or .clip if you don't want ellipsis
+                overflow: TextOverflow.ellipsis,
                 softWrap: false,
                 maxLines: 1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               subtitle: Text(
                 user.online ? "Online" : "Offline",
-                style: TextStyle(
-                  color: user.online ? Colors.green[300] : Colors.grey[500],
-                  fontSize: 12,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: user.online
+                      ? Colors.green
+                      : Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
               trailing: isSelected
-                  ? const Icon(Icons.arrow_right, color: Colors.white)
+                  ? Icon(
+                      Icons.arrow_right,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
                   : null,
             ),
           );
         }
-        return const SizedBox.shrink(); // fallback for null user
+        return const SizedBox.shrink();
       },
     );
   }

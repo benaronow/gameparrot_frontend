@@ -46,42 +46,54 @@ class FirebaseAuthProvider extends ChangeNotifier {
   }
 
   Future<UserCredential> googleLogin() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn(
-      clientId: kIsWeb ? dotenv.env['WEB_OAUTH_CLIENT'] : null,
-    ).signIn();
-
-    if (googleUser == null) {
-      throw Exception("Google Sign-In aborted");
-    }
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // Sign in to Firebase with the Google credentials
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(
-      credential,
-    );
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      _uid = user.uid;
-      final idToken = await user.getIdToken();
-      await http.post(
-        Uri.parse('http://localhost:8080/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'idToken': idToken}),
+    if (kIsWeb) {
+      // Web sign-in
+      final GoogleAuthProvider authProvider = GoogleAuthProvider();
+      final userCredential = await FirebaseAuth.instance.signInWithPopup(
+        authProvider,
       );
-      notifyListeners();
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _uid = user.uid;
+        final idToken = await user.getIdToken();
+        await http.post(
+          Uri.parse('http://localhost:8080/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'idToken': idToken}),
+        );
+        notifyListeners();
+      }
+      return userCredential;
+    } else {
+      // Mobile (iOS/Android) sign-in
+      final googleSignIn = GoogleSignIn.instance;
+      await googleSignIn.initialize(
+        clientId: kIsWeb ? dotenv.env['WEB_OAUTH_CLIENT'] : null,
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
+      if (googleUser == null) {
+        throw Exception("Google Sign-In aborted");
+      }
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _uid = user.uid;
+        final idToken = await user.getIdToken();
+        await http.post(
+          Uri.parse('http://localhost:8080/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'idToken': idToken}),
+        );
+        notifyListeners();
+      }
+      return userCredential;
     }
-
-    return userCredential;
   }
 
   Future<void> logout() async {

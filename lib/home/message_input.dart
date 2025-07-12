@@ -56,7 +56,6 @@ class _MessageInputState extends State<MessageInput> {
               onChanged: (text) =>
                   setState(() => isComposing = text.trim().isNotEmpty),
               onSubmitted: (_) => _handleSubmitted(),
-              style: TextStyle(color: widget.textColor),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
