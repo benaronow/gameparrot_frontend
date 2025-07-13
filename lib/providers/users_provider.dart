@@ -13,9 +13,28 @@ class UsersProvider extends ChangeNotifier {
   WebSocketChannel? _wsChannel;
   User? _currentUser;
   List<User>? _users;
+  String? _selectedId;
 
   User? get currentUser => _currentUser;
-  List<User>? get users => _users;
+  List<User>? get users => _users ?? [];
+  String? get selectedId => _selectedId;
+  List<User>? get friends =>
+      _users
+          ?.where(
+            (u) =>
+                _currentUser?.interactions?.any((i) => i.uid == u.uid) ?? false,
+          )
+          .toList() ??
+      [];
+  User? get selectedFriend => _users?.firstWhere(
+    (u) => u.uid == _selectedId,
+    orElse: () => User(uid: '', email: 'Unknown User', online: false),
+  );
+
+  void setSelectedId(String? id) {
+    _selectedId = id;
+    notifyListeners();
+  }
 
   Future<void> getCurrentUser(String? uid) async {
     final uri = Uri.parse('${Config.httpUrl}/currentUser?uid=${uid ?? ''}');
@@ -85,11 +104,13 @@ class UsersProvider extends ChangeNotifier {
   void handleMessage(Message message, MessageType type) {
     if (_currentUser == null) return;
 
-    final List<Friend>? newFriends = _currentUser!.friends?.map((f) {
+    final List<Interaction>? newInteractions = _currentUser!.interactions?.map((
+      f,
+    ) {
       if (f.uid == (type == MessageType.receive ? message.from : message.to)) {
         final updatedMessages = List<Message>.from(f.messages);
         updatedMessages.add(message);
-        return Friend(uid: f.uid, messages: updatedMessages);
+        return Interaction(uid: f.uid, messages: updatedMessages);
       } else {
         return f;
       }
@@ -99,7 +120,7 @@ class UsersProvider extends ChangeNotifier {
       uid: _currentUser!.uid,
       email: _currentUser!.email,
       online: _currentUser!.online,
-      friends: newFriends ?? [],
+      interactions: newInteractions ?? [],
       friendRequests: _currentUser!.friendRequests,
     );
 
@@ -116,7 +137,7 @@ class UsersProvider extends ChangeNotifier {
       uid: _currentUser!.uid,
       email: _currentUser!.email,
       online: _currentUser!.online,
-      friends: _currentUser!.friends,
+      interactions: _currentUser!.interactions,
       friendRequests: newRequests,
     );
 
@@ -127,20 +148,24 @@ class UsersProvider extends ChangeNotifier {
     if (_currentUser == null) return;
 
     final List<FriendRequest> newRequests = _currentUser!.friendRequests ?? [];
-    newRequests.removeWhere((r) => r.from == request.from && r.to == request.to);
+    newRequests.removeWhere(
+      (r) => r.from == request.from && r.to == request.to,
+    );
 
-    final Friend newFriend = Friend(
+    final Interaction newInteraction = Interaction(
       uid: request.from == currentUser!.uid ? request.to : request.from,
       messages: [],
     );
-    final List<Friend> newFriends = List.from(_currentUser!.friends ?? []);
-    newFriends.add(newFriend);
+    final List<Interaction> newInteractions = List.from(
+      _currentUser!.interactions ?? [],
+    );
+    newInteractions.add(newInteraction);
 
     _currentUser = User(
       uid: _currentUser!.uid,
       email: _currentUser!.email,
       online: _currentUser!.online,
-      friends: newFriends,
+      interactions: newInteractions,
       friendRequests: newRequests,
     );
 

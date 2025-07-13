@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'message_bubble.dart';
-import 'select_conversation.dart';
 import 'package:gameparrot/providers/users_provider.dart';
-import 'package:gameparrot/providers/home_provider.dart';
-import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class MessageArea extends StatefulWidget {
@@ -42,12 +39,12 @@ class _MessageAreaState extends State<MessageArea> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final homeProvider = Provider.of<HomeProvider>(context);
     final usersProvider = Provider.of<UsersProvider>(context);
-    final selectedId = homeProvider.selectedId;
-    final friends = usersProvider.currentUser?.friends ?? [];
-    final friend = friends.where((f) => f.uid == selectedId).firstOrNull;
-    final currentMessageCount = friend?.messages.length ?? 0;
+    final selectedId = usersProvider.selectedId;
+    final interactions = usersProvider.currentUser?.interactions ?? [];
+    final interaction = interactions
+        .where((f) => f.uid == selectedId).firstOrNull;
+    final currentMessageCount = interaction?.messages.length ?? 0;
 
     if (currentMessageCount > _previousMessageCount) {
       _previousMessageCount = currentMessageCount;
@@ -57,22 +54,16 @@ class _MessageAreaState extends State<MessageArea> {
 
   @override
   Widget build(BuildContext context) {
-    final homeProvider = Provider.of<HomeProvider>(context);
     final usersProvider = Provider.of<UsersProvider>(context);
-
-    final friends = usersProvider.currentUser?.friends ?? [];
-    final selectedId = homeProvider.selectedId;
-
-    final friend = friends.where((f) => f.uid == selectedId).isNotEmpty
-        ? friends.firstWhere((f) => f.uid == selectedId)
-        : null;
-
-    if (selectedId == null || friend == null) {
-      return const SelectConversation();
-    }
-
-    final messages = friend.messages;
-    final currentUserId = Provider.of<FirebaseAuthProvider>(context).uid;
+    final messages =
+        usersProvider.currentUser?.interactions
+            ?.where(
+              (interaction) => interaction.uid == usersProvider.selectedId,
+            ).map(
+              (interaction) => interaction.messages,
+            ).expand((msgList) => msgList)
+            .toList() ??
+        [];
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -93,7 +84,7 @@ class _MessageAreaState extends State<MessageArea> {
                   }
                   final msgIdx = messages.length - idx;
                   final msg = messages[msgIdx];
-                  final isMe = msg.from == currentUserId;
+                  final isMe = msg.from == usersProvider.currentUser?.uid;
                   final messageKey = _getMessageKey(msg);
 
                   return MessageBubble(

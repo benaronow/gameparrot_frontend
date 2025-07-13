@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/home/messages/messages.dart';
+import 'package:gameparrot/home/account_page/account_page.dart';
 import 'package:gameparrot/home/sidebar.dart';
 import 'package:gameparrot/home/user_list/user_list.dart';
+import 'package:gameparrot/providers/users_provider.dart';
+import 'package:provider/provider.dart';
 import 'app_bar.dart';
 import 'package:gameparrot/theme.dart';
 import '../services/services.dart';
@@ -28,21 +30,22 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final homeData = HomeDataModel.getHomeData(context);
+    final selectedId = Provider.of<UsersProvider>(context).selectedId;
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const GameParrotAppBar(),
       body: Row(
         children: [
-          if (!homeData.isMobile) const Sidebar(),
+          if (!isMobile) const Sidebar(),
           Expanded(
             child: Column(
               children: [
-                if (homeData.isMobile && homeData.selectedFriend == null)
+                if (isMobile && selectedId == null)
                   Expanded(child: UserList())
                 else
-                  Messages(),
+                  Expanded(child: AccountPage()),
               ],
             ),
           ),

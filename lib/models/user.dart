@@ -16,14 +16,14 @@ class Message {
   Map<String, dynamic> toJson() => {'message': message, 'from': from, 'to': to};
 }
 
-class Friend {
+class Interaction {
   final String uid;
   final List<Message> messages;
 
-  Friend({required this.uid, required this.messages});
+  Interaction({required this.uid, required this.messages});
 
-  factory Friend.fromJson(Map<String, dynamic> json) {
-    return Friend(
+  factory Interaction.fromJson(Map<String, dynamic> json) {
+    return Interaction(
       uid: json['uid'] ?? '',
       messages:
           (json['messages'] as List<dynamic>?)
@@ -46,10 +46,7 @@ class FriendRequest {
   FriendRequest({required this.from, required this.to});
 
   factory FriendRequest.fromJson(Map<String, dynamic> json) {
-    return FriendRequest(
-      from: json['from'] ?? '',
-      to: json['to'] ?? '',
-    );
+    return FriendRequest(from: json['from'] ?? '', to: json['to'] ?? '');
   }
 
   Map<String, dynamic> toJson() => {'from': from, 'to': to};
@@ -59,14 +56,14 @@ class User {
   final String uid;
   final String email;
   final bool online;
-  final List<Friend>? friends;
+  final List<Interaction>? interactions;
   final List<FriendRequest>? friendRequests;
 
   User({
     required this.uid,
     required this.email,
     required this.online,
-    this.friends,
+    this.interactions,
     this.friendRequests,
   });
 
@@ -75,8 +72,8 @@ class User {
       uid: json['uid'] ?? '',
       email: json['email'] ?? '',
       online: json['online'] ?? false,
-      friends: (json['friends'] as List<dynamic>?)
-          ?.map((f) => Friend.fromJson(f))
+      interactions: (json['interactions'] as List<dynamic>?)
+          ?.map((f) => Interaction.fromJson(f))
           .toList(),
       friendRequests: (json['friend_requests'] as List<dynamic>?)
           ?.map((fr) => FriendRequest.fromJson(fr))
@@ -88,7 +85,7 @@ class User {
     'uid': uid,
     'email': email,
     'online': online,
-    'friends': friends?.map((f) => f.toJson()).toList(),
+    'interactions': interactions?.map((i) => i.toJson()).toList(),
     'friend_requests': friendRequests?.map((fr) => fr.toJson()).toList(),
   };
 }

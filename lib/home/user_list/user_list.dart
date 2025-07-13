@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/home/home_data_model.dart';
+import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
-import 'package:gameparrot/providers/home_provider.dart';
 import 'package:provider/provider.dart';
 import 'list_item.dart';
 
@@ -10,8 +9,7 @@ class UserList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeProvider = Provider.of<HomeProvider>(context);
-    final homeData = HomeDataModel.getHomeData(context);
+    final usersProvider = Provider.of<UsersProvider>(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -25,7 +23,7 @@ class UserList extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: (homeData.friends.isEmpty)
+      child: (usersProvider.friends?.isEmpty ?? true)
           ? Center(
               child: Container(
                 padding: const EdgeInsets.all(24),
@@ -117,15 +115,15 @@ class UserList extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              itemCount: homeData.friends.length,
+              itemCount: usersProvider.friends?.length ?? 0,
               itemBuilder: (context, index) {
-                final user = homeData.friends[index];
-                final isSelected = user.uid == homeProvider.selectedId;
+                final user = usersProvider.friends![index];
+                final isSelected = user.uid == usersProvider.selectedId;
 
                 return UserListItem(
                   user: user,
                   isSelected: isSelected,
-                  onTap: () => homeProvider.setSelectedId(user.uid),
+                  onTap: () => usersProvider.setSelectedId(user.uid),
                 );
               },
             ),

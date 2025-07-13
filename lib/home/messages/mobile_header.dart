@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/home/home_data_model.dart';
-import 'package:gameparrot/providers/home_provider.dart';
+import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/widgets.dart';
 
 class MobileHeader extends StatelessWidget {
-  const MobileHeader({super.key});
+  final VoidCallback close;
+  const MobileHeader({super.key, required this.close});
 
   @override
   Widget build(BuildContext context) {
-    final homeData = HomeDataModel.getHomeData(context);
+    final friend = Provider.of<UsersProvider>(context).selectedFriend;
 
     return Container(
       padding: const EdgeInsets.only(top: 10, bottom: 30, left: 16, right: 16),
@@ -36,10 +36,7 @@ class MobileHeader extends StatelessWidget {
                 icon: Icons.arrow_back,
                 iconColor: Colors.white,
                 size: 40,
-                onPressed: () => Provider.of<HomeProvider>(
-                  context,
-                  listen: false,
-                ).setSelectedId(null),
+                onPressed: close,
               ),
             ),
             // Email centered in the entire component
@@ -49,7 +46,7 @@ class MobileHeader extends StatelessWidget {
                   horizontal: 60,
                 ), // Account for button space
                 child: Text(
-                  homeData.selectedFriend?.email ?? '',
+                  friend?.email ?? '',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,

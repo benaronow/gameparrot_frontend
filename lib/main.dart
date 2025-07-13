@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gameparrot/auth/auth.dart';
-import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import 'package:gameparrot/home/home.dart';
 import 'package:gameparrot/providers/users_provider.dart';
@@ -74,15 +73,8 @@ class _MyAppState extends State<App> {
       home: authProvider.uid == null
           ? AuthScreen()
           : Builder(
-              builder: (context) => MultiProvider(
-                providers: [
-                  ChangeNotifierProvider<HomeProvider>(
-                    create: (context) => HomeProvider(),
-                  ),
-                  ChangeNotifierProvider<UsersProvider>(
-                    create: (context) => UsersProvider(),
-                  ),
-                ],
+              builder: (context) => ChangeNotifierProvider<UsersProvider>(
+                create: (context) => UsersProvider(),
                 child: Home(),
               ),
             ),

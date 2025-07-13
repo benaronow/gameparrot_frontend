@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:gameparrot/providers/auth_provider.dart';
 import '../../widgets/widgets.dart';
 
 class MessageInput extends StatefulWidget {
@@ -26,23 +24,16 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void _handleSubmitted() {
-    final currentUserId = Provider.of<FirebaseAuthProvider>(
-      context,
-      listen: false,
-    ).uid;
-    final selectedId = Provider.of<HomeProvider>(
-      context,
-      listen: false,
-    ).selectedId;
-    final sendMessage = Provider.of<UsersProvider>(
-      context,
-      listen: false,
-    ).sendMessage;
+    final usersProvider = Provider.of<UsersProvider>(context, listen: false);
 
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    sendMessage(text, currentUserId!, selectedId!);
+    usersProvider.sendMessage(
+      text,
+      usersProvider.currentUser!.uid,
+      usersProvider.selectedId!,
+    );
     _controller.clear();
     setState(() => isComposing = false);
   }
