@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/home/home_data_model.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/widgets.dart';
 
 class MobileHeader extends StatelessWidget {
-  final String? friendEmail;
-
-  const MobileHeader({super.key, this.friendEmail});
+  const MobileHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final homeData = HomeDataModel.getHomeData(context);
+
     return Container(
       padding: const EdgeInsets.only(top: 10, bottom: 30, left: 16, right: 16),
       decoration: BoxDecoration(
@@ -48,7 +49,7 @@ class MobileHeader extends StatelessWidget {
                   horizontal: 60,
                 ), // Account for button space
                 child: Text(
-                  friendEmail ?? '',
+                  homeData.selectedFriend?.email ?? '',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,

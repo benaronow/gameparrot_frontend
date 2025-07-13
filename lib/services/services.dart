@@ -1,2 +1,2 @@
-export '../controllers/home_data_controller.dart';
+export '../home/home_data_model.dart';
 export 'websocket_service.dart';

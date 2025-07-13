@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gameparrot/providers/home_provider.dart';
+import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
 import '../../widgets/widgets.dart';
 
 class MessageInput extends StatefulWidget {
-  final void Function(String message, String from, String to) onSend;
-  final Color textColor;
-  final String hintText;
-
-  const MessageInput({
-    super.key,
-    required this.onSend,
-    required this.textColor,
-    required this.hintText,
-  });
+  const MessageInput({super.key});
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -42,11 +34,15 @@ class _MessageInputState extends State<MessageInput> {
       context,
       listen: false,
     ).selectedId;
+    final sendMessage = Provider.of<UsersProvider>(
+      context,
+      listen: false,
+    ).sendMessage;
 
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    widget.onSend(text, currentUserId!, selectedId!);
+    sendMessage(text, currentUserId!, selectedId!);
     _controller.clear();
     setState(() => isComposing = false);
   }
@@ -93,9 +89,9 @@ class _MessageInputState extends State<MessageInput> {
                       horizontal: 20,
                       vertical: 14,
                     ),
-                    hintText: widget.hintText,
+                    hintText: 'Type your message...',
                     hintStyle: TextStyle(
-                      color: widget.textColor.withValues(alpha: .5),
+                      color: Colors.white.withValues(alpha: .5),
                     ),
                     filled: true,
                     fillColor: Colors.white,

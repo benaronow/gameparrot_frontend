@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gameparrot/home/home_data_model.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/home_provider.dart';
-import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
 import 'list_item.dart';
 
@@ -11,11 +11,7 @@ class UserList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
-    final usersProvider = Provider.of<UsersProvider>(context);
-    final friendIds = usersProvider.currentUser?.friends?.map((f) => f.uid);
-    final friends = usersProvider.users
-        ?.where((u) => friendIds?.contains(u.uid) ?? false)
-        .toList();
+    final homeData = HomeDataModel.getHomeData(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -29,7 +25,7 @@ class UserList extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: (friends?.isEmpty ?? true)
+      child: (homeData.friends.isEmpty)
           ? Center(
               child: Container(
                 padding: const EdgeInsets.all(24),
@@ -121,19 +117,16 @@ class UserList extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              itemCount: friends?.length ?? 0,
+              itemCount: homeData.friends.length,
               itemBuilder: (context, index) {
-                final user = friends?[index];
-                final isSelected = user?.uid == homeProvider.selectedId;
+                final user = homeData.friends[index];
+                final isSelected = user.uid == homeProvider.selectedId;
 
-                if (user != null) {
-                  return UserListItem(
-                    user: user,
-                    isSelected: isSelected,
-                    onTap: () => homeProvider.setSelectedId(user.uid),
-                  );
-                }
-                return const SizedBox.shrink();
+                return UserListItem(
+                  user: user,
+                  isSelected: isSelected,
+                  onTap: () => homeProvider.setSelectedId(user.uid),
+                );
               },
             ),
     );

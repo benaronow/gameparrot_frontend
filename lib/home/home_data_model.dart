@@ -4,8 +4,7 @@ import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
 
-/// Controller for managing home screen data operations
-class HomeDataController {
+class HomeDataModel {
   static HomeData getHomeData(BuildContext context) {
     final usersProvider = Provider.of<UsersProvider>(context);
     final homeProvider = Provider.of<HomeProvider>(context);
@@ -20,36 +19,24 @@ class HomeDataController {
         ?.where((f) => f.uid == selectedId)
         .firstOrNull;
 
-    final sendMessage = Provider.of<UsersProvider>(
-      context,
-      listen: false,
-    ).sendMessage;
-
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return HomeData(
       friends: friends ?? [],
       selectedFriend: selectedFriend,
-      selectedId: selectedId,
-      sendMessage: sendMessage,
       isMobile: isMobile,
     );
   }
 }
 
-/// Data class containing all the processed data needed for the home screen
 class HomeData {
   final List<User> friends;
   final User? selectedFriend;
-  final String? selectedId;
-  final Function(String, String, String?) sendMessage;
   final bool isMobile;
 
   const HomeData({
     required this.friends,
     this.selectedFriend,
-    this.selectedId,
-    required this.sendMessage,
     required this.isMobile,
   });
 }
