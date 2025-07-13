@@ -7,6 +7,8 @@ import 'package:gameparrot/models/user.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 
+enum MessageType { send, receive }
+
 class UsersProvider extends ChangeNotifier {
   WebSocketChannel? _wsChannel;
   User? _currentUser;
@@ -48,6 +50,17 @@ class UsersProvider extends ChangeNotifier {
               from: update.from ?? '',
               to: update.to ?? '',
             ),
+            MessageType.receive,
+          );
+          break;
+        case "friend_request":
+          handleFriendRequest(
+            FriendRequest(from: update.from ?? '', to: update.to ?? ''),
+          );
+          break;
+        case "friend_accept":
+          handleFriendAccept(
+            FriendRequest(from: update.from ?? '', to: update.to ?? ''),
           );
           break;
         case "status":
@@ -59,23 +72,9 @@ class UsersProvider extends ChangeNotifier {
     });
   }
 
-  void handleMessage(Message message) {
-    final List<Friend>? newFriends = _currentUser?.friends?.map((f) {
-      if (f.uid == message.from) {
-        final updatedMessages = List<Message>.from(f.messages);
-        updatedMessages.add(message);
-        return Friend(uid: f.uid, messages: updatedMessages);
-      } else {
-        return f;
-      }
-    }).toList();
-    _currentUser = User(
-      uid: _currentUser?.uid ?? "",
-      email: _currentUser?.email ?? "",
-      online: _currentUser?.online ?? false,
-      friends: newFriends ?? [],
-    );
-    notifyListeners();
+  void closeWsChannel() {
+    _wsChannel?.sink.close();
+    _wsChannel = null;
   }
 
   void handleStatus(List<User> status) {
@@ -83,39 +82,108 @@ class UsersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void sendMessage(String message, String from, String? to) {
-    if (to == null) return;
-    final msgJson = {
-      "type": "message",
-      "message": message,
-      "from": from,
-      "to": to,
-    };
-    _wsChannel?.sink.add(jsonEncode(msgJson));
-    final List<Friend> newFriends =
-        _currentUser?.friends?.map((f) {
-          if (f.uid == to) {
-            final updatedMessages = [
-              ...f.messages,
-              Message(message: message, from: from, to: to),
-            ];
-            return Friend(uid: f.uid, messages: updatedMessages);
-          } else {
-            return f;
-          }
-        }).toList() ??
-        [];
+  void handleMessage(Message message, MessageType type) {
+    if (_currentUser == null) return;
+
+    final List<Friend>? newFriends = _currentUser!.friends?.map((f) {
+      if (f.uid == (type == MessageType.receive ? message.from : message.to)) {
+        final updatedMessages = List<Message>.from(f.messages);
+        updatedMessages.add(message);
+        return Friend(uid: f.uid, messages: updatedMessages);
+      } else {
+        return f;
+      }
+    }).toList();
+
     _currentUser = User(
-      uid: _currentUser?.uid ?? "",
-      email: _currentUser?.email ?? "",
-      online: _currentUser?.online ?? false,
-      friends: newFriends,
+      uid: _currentUser!.uid,
+      email: _currentUser!.email,
+      online: _currentUser!.online,
+      friends: newFriends ?? [],
+      friendRequests: _currentUser!.friendRequests,
     );
+
     notifyListeners();
   }
 
-  void closeWsChannel() {
-    _wsChannel?.sink.close();
-    _wsChannel = null;
+  void handleFriendRequest(FriendRequest request) {
+    if (_currentUser == null) return;
+
+    final List<FriendRequest> newRequests = _currentUser!.friendRequests ?? [];
+    newRequests.add(request);
+
+    _currentUser = User(
+      uid: _currentUser!.uid,
+      email: _currentUser!.email,
+      online: _currentUser!.online,
+      friends: _currentUser!.friends,
+      friendRequests: newRequests,
+    );
+
+    notifyListeners();
+  }
+
+  void handleFriendAccept(FriendRequest request) {
+    if (_currentUser == null) return;
+
+    final List<FriendRequest> newRequests = _currentUser!.friendRequests ?? [];
+    newRequests.removeWhere((r) => r.from == request.from && r.to == request.to);
+
+    final Friend newFriend = Friend(
+      uid: request.from == currentUser!.uid ? request.to : request.from,
+      messages: [],
+    );
+    final List<Friend> newFriends = List.from(_currentUser!.friends ?? []);
+    newFriends.add(newFriend);
+
+    _currentUser = User(
+      uid: _currentUser!.uid,
+      email: _currentUser!.email,
+      online: _currentUser!.online,
+      friends: newFriends,
+      friendRequests: newRequests,
+    );
+
+    notifyListeners();
+  }
+
+  void sendMessage(String messageText, String from, String? to) {
+    if (_currentUser == null || to == null) return;
+
+    final message = Message(message: messageText, from: from, to: to);
+    final msgJson = {
+      "type": "message",
+      "message": messageText,
+      "from": from,
+      "to": to,
+    };
+
+    _wsChannel?.sink.add(jsonEncode(msgJson));
+
+    handleMessage(message, MessageType.send);
+
+    notifyListeners();
+  }
+
+  void sendFriendRequest(String from, String to) {
+    if (_currentUser == null) return;
+
+    final request = FriendRequest(from: from, to: to);
+    final requestJson = {"type": "friend_request", "from": from, "to": to};
+
+    _wsChannel?.sink.add(jsonEncode(requestJson));
+
+    handleFriendRequest(request);
+  }
+
+  void sendFriendAccept(String from, String to) {
+    if (_currentUser == null) return;
+
+    final request = FriendRequest(from: from, to: to);
+    final requestJson = {"type": "friend_accept", "from": from, "to": to};
+
+    _wsChannel?.sink.add(jsonEncode(requestJson));
+
+    handleFriendAccept(request);
   }
 }

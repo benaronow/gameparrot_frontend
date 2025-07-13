@@ -39,17 +39,35 @@ class Friend {
   };
 }
 
+class FriendRequest {
+  final String from;
+  final String to;
+
+  FriendRequest({required this.from, required this.to});
+
+  factory FriendRequest.fromJson(Map<String, dynamic> json) {
+    return FriendRequest(
+      from: json['from'] ?? '',
+      to: json['to'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'from': from, 'to': to};
+}
+
 class User {
   final String uid;
   final String email;
   final bool online;
   final List<Friend>? friends;
+  final List<FriendRequest>? friendRequests;
 
   User({
     required this.uid,
     required this.email,
     required this.online,
     this.friends,
+    this.friendRequests,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -60,6 +78,9 @@ class User {
       friends: (json['friends'] as List<dynamic>?)
           ?.map((f) => Friend.fromJson(f))
           .toList(),
+      friendRequests: (json['friend_requests'] as List<dynamic>?)
+          ?.map((fr) => FriendRequest.fromJson(fr))
+          .toList(),
     );
   }
 
@@ -68,5 +89,6 @@ class User {
     'email': email,
     'online': online,
     'friends': friends?.map((f) => f.toJson()).toList(),
+    'friend_requests': friendRequests?.map((fr) => fr.toJson()).toList(),
   };
 }
