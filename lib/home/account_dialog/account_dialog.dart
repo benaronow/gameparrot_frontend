@@ -3,6 +3,7 @@ import 'package:gameparrot/providers/users_provider.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/widgets.dart';
+import 'non_friends_list.dart';
 
 class AccountDialog extends StatelessWidget {
   const AccountDialog({super.key});
@@ -146,21 +147,7 @@ class AccountDialog extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    "Coming soon...",
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          offset: const Offset(0, 1),
-                          blurRadius: 1,
-                        ),
-                      ],
-                    ),
-                  ),
+                  const NonFriendsList(),
                 ],
               ),
             ),

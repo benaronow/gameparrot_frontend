@@ -3,6 +3,7 @@ import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/home_provider.dart';
 import 'package:gameparrot/providers/users_provider.dart';
 import 'package:provider/provider.dart';
+import 'list_item.dart';
 
 class UserList extends StatelessWidget {
   const UserList({super.key});
@@ -126,145 +127,10 @@ class UserList extends StatelessWidget {
                 final isSelected = user?.uid == homeProvider.selectedId;
 
                 if (user != null) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: isSelected
-                          ? LinearGradient(
-                              colors: [
-                                AppColors.accentBlue,
-                                AppColors.accentBlue.withOpacity(0.8),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                          : LinearGradient(
-                              colors: [
-                                AppColors.darkBlue.withOpacity(0.6),
-                                AppColors.darkBlue.withOpacity(0.4),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.accentBlue.withOpacity(0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                              BoxShadow(
-                                color: Colors.white.withOpacity(0.1),
-                                blurRadius: 1,
-                                offset: const Offset(0, -1),
-                              ),
-                            ]
-                          : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      onTap: () => homeProvider.setSelectedId(user.uid),
-                      leading: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: user.online
-                                  ? Colors.green.withOpacity(0.5)
-                                  : Colors.black.withOpacity(0.2),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          backgroundColor: user.online
-                              ? Colors.green
-                              : AppColors.darkGray,
-                          child: Text(
-                            user.email[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black45,
-                                  offset: Offset(0, 1),
-                                  blurRadius: 2,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        user.email,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        maxLines: 1,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              offset: const Offset(0, 1),
-                              blurRadius: 2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle: Text(
-                        user.online ? "Online" : "Offline",
-                        style: TextStyle(
-                          color: user.online
-                              ? Colors.greenAccent
-                              : Colors.white70,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: const Offset(0, 1),
-                              blurRadius: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                      trailing: isSelected
-                          ? Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white.withOpacity(0.3),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                            )
-                          : null,
-                    ),
+                  return UserListItem(
+                    user: user,
+                    isSelected: isSelected,
+                    onTap: () => homeProvider.setSelectedId(user.uid),
                   );
                 }
                 return const SizedBox.shrink();
