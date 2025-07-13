@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gameparrot/theme.dart';
 import 'package:gameparrot/providers/auth_provider.dart';
@@ -46,28 +47,31 @@ class _AuthScreenState extends State<AuthScreen> {
               constraints: const BoxConstraints(maxWidth: 420),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.white, AppColors.white.withOpacity(0.95)],
+                  colors: [
+                    AppColors.white,
+                    AppColors.white.withValues(alpha: 0.95),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.darkBlue.withOpacity(0.2),
+                    color: AppColors.darkBlue.withValues(alpha: 0.2),
                     blurRadius: 24,
                     offset: const Offset(0, 12),
                   ),
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     blurRadius: 2,
                     offset: const Offset(0, -2),
                   ),
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.05),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.05),
                     blurRadius: 32,
                     offset: const Offset(0, 8),
                   ),
@@ -84,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.2),
                             offset: const Offset(0, 2),
                             blurRadius: 4,
                           ),
@@ -206,11 +210,15 @@ class _AuthScreenState extends State<AuthScreen> {
                           try {
                             final userCredential = await authProvider
                                 .googleLogin();
-                            print(
+                            if (kDebugMode) {
+                              print(
                               'Logged in as ${userCredential.user?.displayName}',
                             );
+                            }
                           } catch (e) {
-                            print('Login failed: $e');
+                            if (kDebugMode) {
+                              print('Login failed: $e');
+                            }
                           }
                         },
                         child: Row(

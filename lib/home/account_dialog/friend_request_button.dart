@@ -60,8 +60,8 @@ class FriendRequestButton extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isEnabled
-              ? [color, color.withOpacity(0.8)]
-              : [Colors.grey.withOpacity(0.6), Colors.grey.withOpacity(0.4)],
+              ? [color, color.withValues(alpha: 0.8)]
+              : [Colors.grey.withValues(alpha: 0.6), Colors.grey.withValues(alpha: 0.4)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -69,14 +69,14 @@ class FriendRequestButton extends StatelessWidget {
         boxShadow: isEnabled
             ? [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 2,
                   offset: const Offset(0, 1),
                 ),
@@ -102,7 +102,7 @@ class FriendRequestButton extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         offset: const Offset(0, 1),
                         blurRadius: 1,
                       ),

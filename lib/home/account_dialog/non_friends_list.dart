@@ -56,13 +56,13 @@ class NonFriendsList extends StatelessWidget {
             Icon(
               Icons.person_search,
               size: 48,
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 12),
             Text(
               'No users to add',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -71,7 +71,7 @@ class NonFriendsList extends StatelessWidget {
             Text(
               'All available users are already friends',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             ),
@@ -80,7 +80,7 @@ class NonFriendsList extends StatelessWidget {
       );
     }
 
-    return Container(
+    return SizedBox(
       height: 200, // Fixed height for the dialog
       child: ListView.builder(
         itemCount: nonFriends.length,

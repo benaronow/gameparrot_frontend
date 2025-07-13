@@ -37,7 +37,7 @@ class MessageBubble extends StatelessWidget {
                   ? LinearGradient(
                       colors: [
                         AppColors.primaryBlue,
-                        AppColors.primaryBlue.withOpacity(0.8),
+                        AppColors.primaryBlue.withValues(alpha: 0.8),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -45,7 +45,7 @@ class MessageBubble extends StatelessWidget {
                   : LinearGradient(
                       colors: [
                         AppColors.lightBlue,
-                        AppColors.lightBlue.withOpacity(0.9),
+                        AppColors.lightBlue.withValues(alpha: 0.9),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -54,13 +54,13 @@ class MessageBubble extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: isMe
-                      ? AppColors.primaryBlue.withOpacity(0.3)
-                      : Colors.black.withOpacity(0.1),
+                      ? AppColors.primaryBlue.withValues(alpha: 0.3)
+                      : Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   blurRadius: 1,
                   offset: const Offset(0, -1),
                 ),
@@ -75,7 +75,7 @@ class MessageBubble extends StatelessWidget {
                 shadows: isMe
                     ? [
                         Shadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           offset: const Offset(0, 1),
                           blurRadius: 2,
                         ),

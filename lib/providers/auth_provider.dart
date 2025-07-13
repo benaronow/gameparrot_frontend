@@ -71,11 +71,13 @@ class FirebaseAuthProvider extends ChangeNotifier {
       await googleSignIn.initialize(
         clientId: kIsWeb ? dotenv.env['WEB_OAUTH_CLIENT'] : null,
       );
-      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
-      if (googleUser == null) {
+      GoogleSignInAccount? googleUser;
+      try {
+        googleUser = await googleSignIn.authenticate();
+      } catch (e) {
         throw Exception("Google Sign-In aborted");
       }
-      final googleAuth = await googleUser.authentication;
+      final googleAuth = googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );

@@ -23,7 +23,7 @@ class StyledInput extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -46,8 +46,8 @@ class StyledInput extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primaryBlue.withOpacity(0.1),
-                  AppColors.primaryBlue.withOpacity(0.05),
+                  AppColors.primaryBlue.withValues(alpha: 0.1),
+                  AppColors.primaryBlue.withValues(alpha: 0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -59,7 +59,7 @@ class StyledInput extends StatelessWidget {
               color: AppColors.primaryBlue,
               shadows: [
                 Shadow(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.3),
                   offset: const Offset(0, 1),
                   blurRadius: 2,
                 ),

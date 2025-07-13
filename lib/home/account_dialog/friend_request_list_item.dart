@@ -24,8 +24,8 @@ class FriendRequestListItem extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.darkBlue.withOpacity(0.6),
-            AppColors.darkBlue.withOpacity(0.4),
+            AppColors.darkBlue.withValues(alpha: 0.6),
+            AppColors.darkBlue.withValues(alpha: 0.4),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -33,7 +33,7 @@ class FriendRequestListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -47,8 +47,8 @@ class FriendRequestListItem extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: user.online
-                    ? Colors.green.withOpacity(0.5)
-                    : Colors.black.withOpacity(0.2),
+                    ? Colors.green.withValues(alpha: 0.5)
+                    : Colors.black.withValues(alpha: 0.2),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -83,7 +83,7 @@ class FriendRequestListItem extends StatelessWidget {
             fontWeight: FontWeight.w600,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 offset: const Offset(0, 1),
                 blurRadius: 2,
               ),
@@ -98,7 +98,7 @@ class FriendRequestListItem extends StatelessWidget {
             fontWeight: FontWeight.w500,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 offset: const Offset(0, 1),
                 blurRadius: 1,
               ),

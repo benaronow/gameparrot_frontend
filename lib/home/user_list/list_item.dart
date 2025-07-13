@@ -23,15 +23,15 @@ class UserListItem extends StatelessWidget {
             ? LinearGradient(
                 colors: [
                   AppColors.accentBlue,
-                  AppColors.accentBlue.withOpacity(0.8),
+                  AppColors.accentBlue.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
             : LinearGradient(
                 colors: [
-                  AppColors.darkBlue.withOpacity(0.6),
-                  AppColors.darkBlue.withOpacity(0.4),
+                  AppColors.darkBlue.withValues(alpha: 0.6),
+                  AppColors.darkBlue.withValues(alpha: 0.4),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -40,19 +40,19 @@ class UserListItem extends StatelessWidget {
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: AppColors.accentBlue.withOpacity(0.4),
+                  color: AppColors.accentBlue.withValues(alpha: 0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   blurRadius: 1,
                   offset: const Offset(0, -1),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -67,8 +67,8 @@ class UserListItem extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: user.online
-                    ? Colors.green.withOpacity(0.5)
-                    : Colors.black.withOpacity(0.2),
+                    ? Colors.green.withValues(alpha: 0.5)
+                    : Colors.black.withValues(alpha: 0.2),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -103,7 +103,7 @@ class UserListItem extends StatelessWidget {
             fontWeight: FontWeight.w600,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 offset: const Offset(0, 1),
                 blurRadius: 2,
               ),
@@ -118,7 +118,7 @@ class UserListItem extends StatelessWidget {
             fontWeight: FontWeight.w500,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 offset: const Offset(0, 1),
                 blurRadius: 1,
               ),
@@ -131,7 +131,7 @@ class UserListItem extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
