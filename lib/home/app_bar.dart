@@ -40,7 +40,6 @@ class GameParrotAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.only(right: 8),
                 child: StyledIconButton(
                   icon: Icons.account_circle,
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
                   iconColor: Colors.white,
                   size: 40,
                   onPressed: () => showDialog(
@@ -69,7 +68,6 @@ class GameParrotAppBar extends StatelessWidget implements PreferredSizeWidget {
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: StyledIconButton(
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
                 icon: Icons.logout,
                 iconColor: Colors.white,
                 size: 40,

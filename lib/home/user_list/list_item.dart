@@ -17,7 +17,7 @@ class UserListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         gradient: isSelected
             ? LinearGradient(
@@ -30,8 +30,8 @@ class UserListItem extends StatelessWidget {
               )
             : LinearGradient(
                 colors: [
+                  AppColors.darkBlue.withValues(alpha: 0.8),
                   AppColors.darkBlue.withValues(alpha: 0.6),
-                  AppColors.darkBlue.withValues(alpha: 0.4),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

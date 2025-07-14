@@ -12,12 +12,12 @@ class UserList extends StatelessWidget {
     final usersProvider = Provider.of<UsersProvider>(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.darkBlue.withValues(alpha: 0.8),
             AppColors.darkBlue.withValues(alpha: 0.6),
+            AppColors.darkBlue.withValues(alpha: 0.4),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,

@@ -20,7 +20,7 @@ class FriendRequestListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [

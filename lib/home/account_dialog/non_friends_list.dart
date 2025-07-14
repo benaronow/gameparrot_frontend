@@ -50,7 +50,7 @@ class NonFriendsList extends StatelessWidget {
 
     if (nonFriends.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           children: [
             Icon(
